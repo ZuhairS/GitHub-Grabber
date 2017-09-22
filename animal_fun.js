@@ -27,19 +27,20 @@ const querystring = require('querystring');
 const cache = {};
 
 const server = http.createServer((req, res) => {
-  let query = querystring.parse();
-  if (query.letter) {
+  let query = querystring.parse(req.url);
+  if (query['/?letter']) {
     const animals = [];
     fs.readFile('./animal.txt', 'utf-8', (err, data) => {
       if (err) {
         console.log(err);
       } else {
         data.split('\n').forEach(el => {
-          if (el[0] === query.letter) {
+          if (el[0] === query['/?letter']) {
             animals.push(el);
           }
         });
         res.write(animals.join("\n"));
+        res.end();
       }
     });
   } else {
@@ -48,10 +49,10 @@ const server = http.createServer((req, res) => {
         console.log(err);
       } else {
         res.write(data);
+        res.end();
       }
     });
   }
-  res.end();
 });
 
 server.listen(8000, () => console.log("I'm listening on port 8000!"));
